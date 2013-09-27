@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="investmentCalc:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/investmentCalc_jar</output-path>
+    <root id="archive" name="investmentCalc.jar">
+      <element id="module-output" name="investmentCalc" />
+      <element id="extracted-dir" path="C:/Program Files/Java/jre7/lib/deploy.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

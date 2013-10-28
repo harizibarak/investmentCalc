@@ -1,16 +1,20 @@
 import com.sun.deploy.panel.NumberDocument;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,14 +31,19 @@ public class InvestmentScr extends JFrame
     private static int DEFAULT_LABEL_WIDTH = 120;
     private static int DEFAULT_SLIDER_WIDTH = 250;
     private static Dimension DEFAULT_BUTTON_SIZE = new Dimension(100, 25);
-    private static Font DEFAULT_TEXTFIELD_FONT = new Font("Arial", Font.PLAIN, 12);
-    private static Font DEFAULT_LABEL_FONT = new Font("Arial", Font.BOLD, 12);
+    public static Font DEFAULT_TEXTFIELD_FONT = new Font("Arial", Font.PLAIN, 12);
+    public static Font DEFAULT_LABEL_FONT = new Font("Arial", Font.BOLD, 12);
     private static DecimalFormat yearsFormat = new DecimalFormat("##.#");
+
+    static
+    {
+        UIManager.put("TextField.font", new FontUIResource(DEFAULT_TEXTFIELD_FONT));
+        UIManager.put("Label.font", new FontUIResource(DEFAULT_LABEL_FONT));
+        UIManager.put("Button.font", new FontUIResource(DEFAULT_LABEL_FONT));
+    }
 
     private JButton computeButton = new JButton("חשב החזר");
     private JButton exitButton = new JButton("יציאה");
-    private JButton patternButton = new JButton("הוסף תבנית");
-    private JButton changingRentButton = new JButton("שכירות משתנה");
     private JSlider monthSlider = new JSlider(1, 200, 1);
     private JLabel monthNumLabel = new JLabel("1");
     private JLabel monthLabel = new JLabel("מס' חודשים שעברו:");
@@ -52,10 +61,10 @@ public class InvestmentScr extends JFrame
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("home.png")));
         this.setTitle("מחשבון השקעות");
-        this.setSize(new Dimension(700, 250));
+        this.setSize(new Dimension(750, 250));
         this.setLocationRelativeTo(null);
 
-        propertyValueTextfield.setValue(700000);
+        propertyValueTextfield.setValue(690000);
         investmentTextfield.setValue(175000);
         rentTextfield.setValue(3000);
 
@@ -73,6 +82,7 @@ public class InvestmentScr extends JFrame
         investmentPanel.add(Box.createRigidArea(new Dimension(10, 10)));
         investmentPanel.add(investmentTextfield);
 
+        JButton changingRentButton = new JButton("שכירות משתנה");
         changingRentButton.addActionListener(new ActionListener()
         {
             @Override
@@ -181,19 +191,6 @@ public class InvestmentScr extends JFrame
         computeButton.setMaximumSize(DEFAULT_BUTTON_SIZE);
         exitButton.setMinimumSize(DEFAULT_BUTTON_SIZE);
         exitButton.setMaximumSize(DEFAULT_BUTTON_SIZE);
-
-        propertyValueTextfield.setFont(DEFAULT_TEXTFIELD_FONT);
-        investmentTextfield.setFont(DEFAULT_TEXTFIELD_FONT);
-        rentTextfield.setFont(DEFAULT_TEXTFIELD_FONT);
-        propertyLabel.setFont(DEFAULT_LABEL_FONT);
-        investmentLabel.setFont(DEFAULT_LABEL_FONT);
-        rentLabel.setFont(DEFAULT_LABEL_FONT);
-        monthLabel.setFont(DEFAULT_LABEL_FONT);
-        monthNumLabel.setFont(DEFAULT_LABEL_FONT);
-        computeButton.setFont(DEFAULT_LABEL_FONT);
-        exitButton.setFont(DEFAULT_LABEL_FONT);
-        changingRentButton.setFont(DEFAULT_LABEL_FONT);
-        patternButton.setFont(DEFAULT_LABEL_FONT);
     }
 
     private void computeReturnValue()
@@ -224,7 +221,6 @@ public class InvestmentScr extends JFrame
         String msg = "סכום השקעתך עומד על: "+ dfInvest.format(investValue) + " ש\"ח אשר מהווה כ-"+dfRent.format(investValue/propValue * 100) +
                 "% מסכום הנכס ולכן אתה זכאי ל-" + dfRent.format((investValue / propValue)*rentValue) + " ש\"ח שכירות";
         JLabel msgLabel = new JLabel(msg);
-        msgLabel.setFont(DEFAULT_LABEL_FONT);
         JOptionPane.showMessageDialog(InvestmentScr.this, msgLabel,"החזר השקעה" , JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -248,7 +244,6 @@ public class InvestmentScr extends JFrame
         entryPointsTableScrollPane.setPreferredSize(new Dimension(200, 120));
 
         final JTextField monthField = new JTextField();
-        monthField.setFont(DEFAULT_TEXTFIELD_FONT);
         monthField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         monthField.setDocument(new NumberDocument());
         entryPointsTable.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(monthField));
@@ -269,7 +264,6 @@ public class InvestmentScr extends JFrame
             }
         });
         final JTextField amountField = new JTextField();
-        amountField.setFont(DEFAULT_TEXTFIELD_FONT);
         amountField.setDocument(new NumberDocument());
         amountField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         entryPointsTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(amountField));
@@ -291,9 +285,6 @@ public class InvestmentScr extends JFrame
 
         JButton plusButton = new JButton("+");
         JButton minusButton = new JButton("-");
-
-        plusButton.setFont(DEFAULT_LABEL_FONT);
-        minusButton.setFont(DEFAULT_LABEL_FONT);
 
         plusButton.addActionListener(new ActionListener()
         {
@@ -331,15 +322,6 @@ public class InvestmentScr extends JFrame
             }
         });
 
-        patternButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                new PatternDialog(InvestmentScr.this);
-            }
-        });
-
         JPanel tableButtonPanel = new JPanel();
         tableButtonPanel.setLayout(new BoxLayout(tableButtonPanel, BoxLayout.LINE_AXIS));
         tableButtonPanel.add(plusButton);
@@ -349,7 +331,16 @@ public class InvestmentScr extends JFrame
         if (includePatternButton)
         {
             tableButtonPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+            JButton patternButton = new JButton("הוסף תבנית");
             tableButtonPanel.add(patternButton);
+            patternButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    new PatternDialog(InvestmentScr.this, entryPointsTable).setVisible(true);
+                }
+            });
         }
 
         JPanel tablePanel = new JPanel();
@@ -388,7 +379,6 @@ public class InvestmentScr extends JFrame
             this.setLocationRelativeTo(null);
 
             JButton approveButton = new JButton("אשר");
-            approveButton.setFont(DEFAULT_LABEL_FONT);
             approveButton.setPreferredSize(new Dimension(80, 25));
             approveButton.addActionListener(new ActionListener()
             {
@@ -420,90 +410,6 @@ public class InvestmentScr extends JFrame
         public Map<Integer, Double> getMonthToRentMap()
         {
             return monthToRentMap;
-        }
-    }
-
-    private class PatternDialog extends JDialog
-    {
-        private PatternDialog(Frame owner)
-        {
-            super(owner, true);
-            this.setTitle("תבנית תשלום");
-            this.setSize(350, 125);
-            this.setLocationRelativeTo(null);
-
-            JLabel everyLabel = new JLabel("כל ");
-            JLabel monthAmountLabel = new JLabel(" חודשים, סכום של ");
-            JLabel untilLabel = new JLabel("עד חודש");
-            everyLabel.setFont(DEFAULT_LABEL_FONT);
-            monthAmountLabel.setFont(DEFAULT_LABEL_FONT);
-            untilLabel.setFont(DEFAULT_LABEL_FONT);
-
-            final JTextField monthField = new JTextField();
-            monthField.setDocument(new NumberDocument());
-            final JTextField untilField = new JTextField();
-            untilField.setDocument(new NumberDocument());
-            final JTextField amountField = new JTextField();
-            amountField.setDocument(new NumberDocument());
-            monthField.setFont(DEFAULT_TEXTFIELD_FONT);
-            amountField.setFont(DEFAULT_TEXTFIELD_FONT);
-            untilField.setFont(DEFAULT_TEXTFIELD_FONT);
-
-            monthField.setMinimumSize(new Dimension(25, 25));
-            monthField.setPreferredSize(new Dimension(25, 25));
-            monthField.setMaximumSize(new Dimension(25, 25));
-            amountField.setMinimumSize(new Dimension(80, 25));
-            amountField.setPreferredSize(new Dimension(80, 25));
-            amountField.setMaximumSize(new Dimension(80, 25));
-            untilField.setMinimumSize(new Dimension(25, 25));
-            untilField.setPreferredSize(new Dimension(25, 25));
-            untilField.setMaximumSize(new Dimension(25, 25));
-
-            JPanel mainPanel = new JPanel();
-            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
-            mainPanel.add(everyLabel);
-            mainPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-            mainPanel.add(monthField);
-            mainPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-            mainPanel.add(monthAmountLabel);
-            mainPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-            mainPanel.add(amountField);
-            mainPanel.add(Box.createRigidArea(new Dimension(10 , 10)));
-            mainPanel.add(untilLabel);
-            mainPanel.add(Box.createRigidArea(new Dimension(10 , 10)));
-            mainPanel.add(untilField);
-            mainPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-
-            JButton approveButton = new JButton("אשר");
-            approveButton.setFont(DEFAULT_LABEL_FONT);
-            approveButton.setPreferredSize(new Dimension(80, 25));
-            approveButton.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    ((DefaultTableModel)entryPointsTable.getModel()).setRowCount(0);
-
-                    Integer month = Integer.parseInt(monthField.getText());
-                    Integer until = Integer.parseInt(untilField.getText());
-
-                    for (int i = month; i <= until; i += month)
-                    {
-                        ((DefaultTableModel)entryPointsTable.getModel()).addRow(new Object[]{String.valueOf(i), amountField.getText()});
-                    }
-
-                    PatternDialog.this.dispose();
-                }
-            });
-
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.add(approveButton);
-
-            this.getContentPane().setLayout(new BorderLayout());
-            this.getContentPane().add(mainPanel, BorderLayout.CENTER);
-            this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-            this.applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-            this.setVisible(true);
         }
     }
 

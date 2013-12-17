@@ -31,13 +31,14 @@ public class InvestmentScr extends JFrame
     private static int DEFAULT_LABEL_WIDTH = 120;
     private static int DEFAULT_SLIDER_WIDTH = 250;
     private static Dimension DEFAULT_BUTTON_SIZE = new Dimension(100, 25);
-    public static Font DEFAULT_TEXTFIELD_FONT = new Font("Arial", Font.PLAIN, 12);
+    public static Font DEFAULT_TEXT_FONT = new Font("Arial", Font.PLAIN, 14);
     public static Font DEFAULT_LABEL_FONT = new Font("Arial", Font.BOLD, 12);
     private static DecimalFormat yearsFormat = new DecimalFormat("##.#");
 
     static
     {
-        UIManager.put("TextField.font", new FontUIResource(DEFAULT_TEXTFIELD_FONT));
+        UIManager.put("FormattedTextField.font", new FontUIResource(DEFAULT_TEXT_FONT));
+        UIManager.put("TextField.font", new FontUIResource(DEFAULT_TEXT_FONT));
         UIManager.put("Label.font", new FontUIResource(DEFAULT_LABEL_FONT));
         UIManager.put("Button.font", new FontUIResource(DEFAULT_LABEL_FONT));
     }
